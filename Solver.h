@@ -31,25 +31,29 @@ private:
 	// Boundary crossing counter arrays
 	int *xBCCounter, *yBCCounter, *zBCCounter;
 
-	// Time step, squared time step
-	double dt, dt2;
+	// Time step, squared time step, internal time counter
+	double dt, dt2, t;
 
-	double rCut2 = 2.5, energyCut = 0;
+	double rCut2 = 10, energyCut = 0;
 
-	double PE, KE, TotalE, T0 = -1;
+	double PE, KE, TotalE, T0;
+
+
+private:
+	void initializeArrays();
+
+	void updateForces();
 
 
 public:
 	Solver(std::fstream &initFile, const double &L, const double &dt);
-	Solver(const int &N, const double &L, const double &dt);
+	Solver(const int &N, const double &L, const double &dt, const double &T0 = -1);
 
 	~Solver();
 
 	void step();
 
-	void initializeArrays();
-
-	void updateForces();
+	void saveEnergyToFile(std::fstream &file);
 
 	void xyzOut(std::fstream &file, bool includeVelocities, bool unfold);
 
@@ -59,4 +63,3 @@ public:
 
 
 #endif //NEWLJ_GAS_SOLVER_H
-// what is e_corr & tail correction

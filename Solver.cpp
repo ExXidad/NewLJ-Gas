@@ -19,6 +19,7 @@ void Solver::step()
 //				  fy[i] << "\t" <<
 //				  fz[i] << "\t" << std::endl;
 //	}
+	t += dt;
 	for (int i = 0; i < N; ++i)
 	{
 		// First integration step
@@ -164,7 +165,8 @@ void Solver::xyzOut(std::fstream &file, bool includeVelocities, bool unfold)
 				 vx[i] << "\t" <<
 				 vy[i] << "\t" <<
 				 vz[i] << "\t" << std::endl;
-		} else file << std::endl;
+		} else
+			file << std::endl;
 	}
 }
 
@@ -215,15 +217,13 @@ void Solver::initializeArrays()
 	zBCCounter = new int[N];
 }
 
-Solver::Solver(
-		const int &N,
-		const double &L,
-		const double &dt)
+Solver::Solver(const int &N, const double &L, const double &dt, const double &T0)
 {
 	this->N = N;
 	this->L = L;
 	this->dt = dt;
 	this->dt2 = dt * dt;
+	this->T0 = T0;
 
 	initializeArrays();
 
@@ -240,21 +240,18 @@ Solver::Solver(
 		vx[i] = gsl_ran_exponential(r, 1.0);
 		vy[i] = gsl_ran_exponential(r, 1.0);
 		vz[i] = gsl_ran_exponential(r, 1.0);
-		xIndex++;
+		++xIndex;
 		if (xIndex == n)
 		{
 			xIndex = 0;
-			yIndex++;
+			++yIndex;
 			if (yIndex == n)
 			{
 				yIndex = 0;
-				zIndex++;
+				++zIndex;
 			}
 		}
 	}
-	vx[0] = 0;
-	vy[0] = 0;
-	vz[0] = 0;
 
 	double cmvx = 0, cmvy = 0, cmvz = 0;
 	/* Take away any center-of-mass drift; compute initial KE */
@@ -275,7 +272,7 @@ Solver::Solver(
 	KE *= 0.5;
 	/* if T0 is specified, scale velocities */
 	double T, fac;
-	if (T0 > 0.0)
+	if (T0 > 0)
 	{
 		T = KE / N * 2. / 3.;
 		fac = sqrt(T0 / T);
@@ -290,4 +287,15 @@ Solver::Solver(
 		KE *= 0.5;
 	}
 	updateForces();
+}
+
+void Solver::saveEnergyToFile(std::fstream &file)
+{
+	if (file.is_open())
+	{
+		file << t << "\t" << KE << "\t" << PE << "\t" << TotalE << std::endl;
+	} else
+	{
+		std::cout << "File to write energy not found" << std::endl;
+	}
 }
