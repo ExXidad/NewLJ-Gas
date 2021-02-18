@@ -219,7 +219,7 @@ void Solver::initializeArrays()
 	zBCCounter = new int[N];
 }
 
-Solver::Solver(const double &dt, const double &T0, const int &N, const double &rho, const double &L)
+Solver::Solver(const double &dt, const double &T0, const int &N, const double &rho, const double &L, const double &rCut)
 {
 	if (rho < 0)
 	{
@@ -241,6 +241,8 @@ Solver::Solver(const double &dt, const double &T0, const int &N, const double &r
 	this->dt = dt;
 	this->dt2 = dt * dt;
 	this->T0 = T0;
+	this->V = pow(this->L, 3);
+	this->rCut2 = rCut * rCut;
 
 	initializeArrays();
 
@@ -264,7 +266,7 @@ void Solver::savePressureToFile(std::fstream &file)
 {
 	if (file.is_open())
 	{
-		file << t << "\t" << rho << "\t" << rho * KE * 2. / 3. / N + virial / 3.0 / pow(L, 3) << std::endl;
+		file << t << "\t" << rho << "\t" << getPressure() << std::endl;
 	} else
 	{
 		std::cout << "File to write pressure not found" << std::endl;
@@ -332,4 +334,14 @@ void Solver::initializeSystem()
 		}
 		KE *= 0.5;
 	}
+}
+
+double Solver::getPressure()
+{
+	return rho * KE * 2. / 3. / N + virial / 3.0 / V;
+}
+
+double Solver::getPkPfpPk()
+{
+	return (rho * KE * 2. / 3. / N) / getPressure();
 }

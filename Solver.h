@@ -24,7 +24,7 @@ private:
 
 	// Cell size
 	double rho;
-	double L = 1;
+	double L, V;
 
 	// Coordinates, velocities and forces arrays
 	double *x, *y, *z, *vx, *vy, *vz, *fx, *fy, *fz;
@@ -58,7 +58,8 @@ public:
 		   const double &T0 = 1,
 		   const int &N = -1,
 		   const double &rho = -1,
-		   const double &L = -1
+		   const double &L = -1,
+		   const double &rCut = 10
 	);
 
 	~Solver();
@@ -73,6 +74,9 @@ public:
 
 	void xyzIn(std::fstream &fstream);
 
+	double getPressure();
+
+	double getPkPfpPk();
 };
 
 
