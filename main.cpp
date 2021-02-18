@@ -11,14 +11,14 @@ int main(int argc, char *argv[])
 {
 	int N = 729;
 	double rho = 0.8;
-	double L = pow(N / rho,0.333333);
-	double tMax = 10;
+	double tMax = 30;
 	double dt = 0.001;
-	int NSteps = tMax / dt;
-	Solver solver(N, L, dt, 2);
+	int NSteps = static_cast<int>(1. * tMax / dt);
+	Solver solver(dt, 2, N, rho, -1);
 
 	std::fstream file;
 	std::fstream energyFile;
+	std::fstream pressureFile;
 	energyFile.open("../energy/energy", std::ios::out);
 
 	for (int i = 0; i <= NSteps; ++i)
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 		if (dt * i >= 0)
 		{
 			file.open("../pos&vel/" + std::to_string(i) + ".xyz", std::ios::out);
-			solver.xyzOut(file, true, false);
+			solver.xyzOut(file, true, true);
 			file.close();
 
 			solver.saveEnergyToFile(energyFile);
@@ -34,12 +34,13 @@ int main(int argc, char *argv[])
 
 		if (i % (NSteps / 100) == 0)
 		{
-			std::cout << "Progress: " << 1.* i / NSteps*100. << "%" << std::endl;
+			std::cout << "Progress: " << 1. * i / NSteps * 100. << "%" << std::endl;
 		}
 
 		solver.step();
 	}
 
 	energyFile.close();
+	pressureFile.close();
 	return 0;
 }

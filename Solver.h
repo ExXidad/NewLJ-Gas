@@ -23,6 +23,7 @@ private:
 	bool initFileVelocitiesIncluded;
 
 	// Cell size
+	double rho;
 	double L = 1;
 
 	// Coordinates, velocities and forces arrays
@@ -36,7 +37,11 @@ private:
 
 	double rCut2 = 10, energyCut = 0;
 
-	double PE, KE, TotalE, T0;
+	// Energies, virial
+	double PE, KE, TotalE, virial = 0;
+
+	// Initial temperature
+	double T0;
 
 
 private:
@@ -47,13 +52,21 @@ private:
 
 public:
 	Solver(std::fstream &initFile, const double &L, const double &dt);
-	Solver(const int &N, const double &L, const double &dt, const double &T0 = -1);
+
+	Solver(const double &dt,
+		   const double &T0 = 1,
+		   const int &N = -1,
+		   const double &rho = -1,
+		   const double &L = -1
+	);
 
 	~Solver();
 
 	void step();
 
 	void saveEnergyToFile(std::fstream &file);
+
+	void savePressureToFile(std::fstream &file);
 
 	void xyzOut(std::fstream &file, bool includeVelocities, bool unfold);
 
@@ -62,4 +75,4 @@ public:
 };
 
 
-#endif //NEWLJ_GAS_SOLVER_H
+#endif //NEWLJ_GAS_SOLVER_

@@ -107,6 +107,7 @@ void Solver::updateForces()
 	double dx, dy, dz;
 	double r2, r6Inverse, hL = L / 2.0;
 	double energy = 0, force;
+	virial = 0;
 
 	for (int i = 0; i < (N - 1); ++i)
 	{
@@ -137,6 +138,7 @@ void Solver::updateForces()
 				fy[j] -= dy * force / r2;
 				fz[i] += dz * force / r2;
 				fz[j] -= dz * force / r2;
+				virial += force;
 			}
 		}
 	}
@@ -217,10 +219,25 @@ void Solver::initializeArrays()
 	zBCCounter = new int[N];
 }
 
-Solver::Solver(const int &N, const double &L, const double &dt, const double &T0)
+Solver::Solver(const double &dt, const double &T0, const int &N, const double &rho, const double &L)
 {
-	this->N = N;
-	this->L = L;
+	if (rho < 0)
+	{
+		this->L = L;
+		this->N = N;
+		this->rho = pow(L, 3) / N;
+	} else if (L < 0)
+	{
+		this->rho = rho;
+		this->N = N;
+		this->L = pow(N / rho, 0.333333);
+	} else
+	{
+		this->L = L;
+		this->rho = rho;
+		this->N = pow(L, 3) * rho;
+	}
+
 	this->dt = dt;
 	this->dt2 = dt * dt;
 	this->T0 = T0;
@@ -297,5 +314,16 @@ void Solver::saveEnergyToFile(std::fstream &file)
 	} else
 	{
 		std::cout << "File to write energy not found" << std::endl;
+	}
+}
+
+void Solver::savePressureToFile(std::fstream &file)
+{
+	if (file.is_open())
+	{
+		file << t << "\t" << rho << "\t" << rho * KE * 2. / 3. / N + virial / 3.0 / pow(L, 3) << std::endl;
+	} else
+	{
+		std::cout << "File to write pressure not found" << std::endl;
 	}
 }
