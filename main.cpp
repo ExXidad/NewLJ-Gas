@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 {
 	int N = 729;
 	double rho = 0.8;
-	double tMax = 30;
+	double tMax = 10;
 	double dt = 0.001;
 	int NSteps = static_cast<int>(1. * tMax / dt);
 	Solver solver(dt, 2, N, rho, -1);
@@ -20,16 +20,18 @@ int main(int argc, char *argv[])
 	std::fstream energyFile;
 	std::fstream pressureFile;
 	energyFile.open("../energy/energy", std::ios::out);
+	pressureFile.open("../pressure&density/pressure&density", std::ios::out);
 
 	for (int i = 0; i <= NSteps; ++i)
 	{
 		if (dt * i >= 0)
 		{
-			file.open("../pos&vel/" + std::to_string(i) + ".xyz", std::ios::out);
-			solver.xyzOut(file, true, true);
-			file.close();
+//			file.open("../pos&vel/" + std::to_string(i) + ".xyz", std::ios::out);
+//			solver.xyzOut(file, true, true);
+//			file.close();
 
 			solver.saveEnergyToFile(energyFile);
+			solver.savePressureToFile(pressureFile);
 		}
 
 		if (i % (NSteps / 100) == 0)

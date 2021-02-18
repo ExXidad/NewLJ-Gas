@@ -49,6 +49,7 @@ private:
 
 	void updateForces();
 
+	void initializeSystem();
 
 public:
 	Solver(std::fstream &initFile, const double &L, const double &dt);

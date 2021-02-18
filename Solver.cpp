@@ -244,8 +244,37 @@ Solver::Solver(const double &dt, const double &T0, const int &N, const double &r
 
 	initializeArrays();
 
+	initializeSystem();
+
+	updateForces();
+}
+
+void Solver::saveEnergyToFile(std::fstream &file)
+{
+	if (file.is_open())
+	{
+		file << t << "\t" << KE << "\t" << PE << "\t" << TotalE << std::endl;
+	} else
+	{
+		std::cout << "File to write energy not found" << std::endl;
+	}
+}
+
+void Solver::savePressureToFile(std::fstream &file)
+{
+	if (file.is_open())
+	{
+		file << t << "\t" << rho << "\t" << rho * KE * 2. / 3. / N + virial / 3.0 / pow(L, 3) << std::endl;
+	} else
+	{
+		std::cout << "File to write pressure not found" << std::endl;
+	}
+}
+
+void Solver::initializeSystem()
+{
 	// Generate uniform grid
-	int n = std::ceil(std::cbrt(N));
+	int n = std::floor(std::cbrt(N));
 
 	/* Assign particle positions */
 	int xIndex = 0, yIndex = 0, zIndex = 0;
@@ -302,28 +331,5 @@ Solver::Solver(const double &dt, const double &T0, const int &N, const double &r
 			KE += vx[i] * vx[i] + vy[i] * vy[i] + vz[i] * vz[i];
 		}
 		KE *= 0.5;
-	}
-	updateForces();
-}
-
-void Solver::saveEnergyToFile(std::fstream &file)
-{
-	if (file.is_open())
-	{
-		file << t << "\t" << KE << "\t" << PE << "\t" << TotalE << std::endl;
-	} else
-	{
-		std::cout << "File to write energy not found" << std::endl;
-	}
-}
-
-void Solver::savePressureToFile(std::fstream &file)
-{
-	if (file.is_open())
-	{
-		file << t << "\t" << rho << "\t" << rho * KE * 2. / 3. / N + virial / 3.0 / pow(L, 3) << std::endl;
-	} else
-	{
-		std::cout << "File to write pressure not found" << std::endl;
 	}
 }
