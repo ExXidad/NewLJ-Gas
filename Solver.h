@@ -35,7 +35,7 @@ private:
 	// Time step, squared time step, internal time counter
 	double dt, dt2, t;
 
-	double rCut2 = 10, energyCut = 0;
+	double rCut2, energyCut = 0;
 
 	// Energies, virial
 	double PE, KE, TotalE, virial = 0;
