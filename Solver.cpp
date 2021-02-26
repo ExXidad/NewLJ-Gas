@@ -153,11 +153,13 @@ void Solver::xyzOut(std::fstream &file, bool includeVelocities, bool unfold)
 		exit(1);
 	}
 
-	file << N << std::endl << std::endl;
+	file << N << std::endl;
+
+	file << "Lattice=\"" << L << " 0.0 0.0 0.0 " << L << " 0.0 0.0 0.0 " << L << "\"" << std::endl;
 
 	for (int i = 0; i < N; ++i)
 	{
-		file << i << "\t" <<
+		file << "Ar" << "\t" <<
 			 x[i] + (unfold ? (xBCCounter[i] * L) : 0.0) << "\t" <<
 			 y[i] + (unfold ? (yBCCounter[i] * L) : 0.0) << "\t" <<
 			 z[i] + (unfold ? (zBCCounter[i] * L) : 0.0) << "\t";
@@ -255,7 +257,7 @@ void Solver::saveEnergyToFile(std::fstream &file)
 {
 	if (file.is_open())
 	{
-		file << t << "\t" << KE << "\t" << PE << "\t" << TotalE << std::endl;
+		file << std::setprecision(15) << t << "\t" << KE << "\t" << PE << "\t" << TotalE << std::endl;
 	} else
 	{
 		std::cout << "File to write energy not found" << std::endl;
@@ -266,7 +268,7 @@ void Solver::savePressureToFile(std::fstream &file)
 {
 	if (file.is_open())
 	{
-		file << t << "\t" << rho << "\t" << getPressure() << std::endl;
+		file << std::setprecision(15) << t << "\t" << rho << "\t" << getPressure() << std::endl;
 	} else
 	{
 		std::cout << "File to write pressure not found" << std::endl;

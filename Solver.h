@@ -12,6 +12,7 @@
 #include <cmath>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
+#include <iomanip>
 
 class Solver
 {
