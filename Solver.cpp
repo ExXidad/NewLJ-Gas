@@ -223,7 +223,11 @@ void Solver::initializeArrays()
 
 Solver::Solver(const double &dt, const double &T0, const int &N, const double &rho, const double &L, const double &rCut)
 {
-	if (rho < 0)
+	if ((rho < 0 && N < 0 && L < 0) || (rho * N * L > 0))
+	{
+		std::cout << "Initial conditions error!" << std::endl;
+		exit(1);
+	} else if (rho < 0)
 	{
 		this->L = L;
 		this->N = N;
@@ -233,11 +237,15 @@ Solver::Solver(const double &dt, const double &T0, const int &N, const double &r
 		this->rho = rho;
 		this->N = N;
 		this->L = pow(N / rho, 0.333333);
-	} else
+	} else if (N < 0)
 	{
 		this->L = L;
 		this->rho = rho;
 		this->N = pow(L, 3) * rho;
+	} else
+	{
+		std::cout << "Initial conditions error!" << std::endl;
+		exit(1);
 	}
 
 	this->dt = dt;
